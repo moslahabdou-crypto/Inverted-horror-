@@ -1,0 +1,26 @@
+name: build jar
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/build.yml'
+      - 'reverse_horror_stage2.zip'
+permissions:
+  contents: write
+jobs:
+  unzip:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: build
+        run: |
+          build -o reverse_horror_stage2.zip
+          cp -r reverse_horror/. .
+          rm -rf reverse_horror reverse_horror_stage2.zip
+      - name: Commit
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add -A
+          git commit -m "Unzip Reverse Horror project" || exit 0
+          git push
